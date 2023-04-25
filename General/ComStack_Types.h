@@ -1,0 +1,8 @@
+#ifndef COMSTACK_TYPES_H
+#define COMSTACK_TYPES_H
+
+
+typedef enum{BUFREQ_OK,BUFREQ_V2X_E_NOT_OK,BUFREQ_E_BUSY,BUFREQ_E_OVFL}BufReq_ReturnType;
+
+
+#endif
