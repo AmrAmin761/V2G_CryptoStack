@@ -2,6 +2,7 @@
  ============================================================================
  Name        : Csm.c
  Author      : Omar AbdelSamea
+ modified by : Amr Amin
  Version     :
  Description :
  ============================================================================
@@ -708,6 +709,244 @@ if(job != NULL_PTR)
 	CsmJobPrimitiveCallbackRef[job->jobPrimitiveInfo->callbackId](job,result);
 
 }
+/************************************************************************************
+ * Service Name: Csm_Encrypt
+ * Service ID[hex]: 0x5e
+ * Sync/Async: Depends on configuration
+ * Reentrancy: Reentrant
+ * Parameters (in): 	uint32 jobId,
+ 						Crypto_OperationModeType mode,
+ 						const uint8* dataPtr,
+ 						uint32 dataLength
+ * Parameters (inout): None
+ * Parameters (out): Std_ReturnType
+ * Return value: None
+ * Description: Encrypts the given data and store the ciphertext in the memory location pointed by the result pointer.
+ ************************************************************************************/
+Std_ReturnType Csm_Encrypt (uint32 jobId,Crypto_OperationModeType mode,const uint8* dataPtr,uint32 dataLength,uint8* resultPtr,uint32* resultLengthPtr)
+{
+	/*
+	 1. [SWS_Csm_91008]  While the CSM is not initialized and any function of the CSM
+	 API is called, except of CSM_Init() and Csm_GetVersionInfo(), the operation
+	 shall not be performed and CSM_E_UNINIT shall be reported to the DET when
+	 CsmDevErrorDetect is true
+	 */
+
+	if (Csm_State == CSM_STATE_UNINIT) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_UNINIT);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 2. [SWS_Csm_91009] If a pointer to null is passed to an API function and the
+	 corresponding input or output data are not re-directed to a key element, the operation
+	 shall not be performed and CSM_E_PARAM_POINTER shall be reported to the DET
+	 when CsmDevErrorDetect is true.
+	 */
+
+	if (dataPtr == NULL_PTR || resultPtr == NULL_PTR || resultLengthPtr == NULL_PTR) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_POINTER);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 3. [SWS_Csm_91011] If a CSM API with a ID handle in its interface is called and the
+	 ID handle is out of range, the operation shall not be performed and CSM_E_PARAM_HANDLE
+	 shall be reported to the DET when CsmDevErrorDetect is true.
+	 */
+
+	if (jobId >= CRYPTO_JOBS_NUM) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_HANDLE);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 4. [SWS_Csm_01091] If a CSM API with a job handle (called jobId) in its interface is
+	 called and the Crypto_ServiceInfoType of the job does not match the requested
+	 service, the operation shall not be performed and CSM_E_SERVICE_TYPE shall be
+	 reported to the DET when CsmDevErrorDetect is true.
+	 */
+
+	if (Crypto_Jobs[jobId]->jobPrimitiveInfo->primitiveInfo->service != CRYPTO_SIGNATUREVERIFY)
+	{
+#if (CSM_RUNTIME_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_SERVICE_TYPE);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 5. [SWS_Csm_01088] If a CSM job needs to be queued and the queue is full, the
+	 runtime error CSM_E_QUEUE_FULL shall be reported to the DET.
+	 */
+
+	if (queue.size == queue.capacity) {
+#if (CSM_RUNTIME_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_QUEUE_FULL);
+#endif
+		return CRYPTO_E_BUSY;
+	}
+
+
+	// check if jobId already in queue
+	sint8 res = getJob(jobId);
+
+	// already in queue
+	if(res != -1)
+	{
+		return V2X_E_NOT_OK;
+	}
+
+	Crypto_JobPrimitiveInputOutputType NewJobPrimitiveInputOutput = {
+			.inputPtr = dataPtr, .inputLength = dataLength, .outputPtr =
+					resultPtr, .outputLengthPtr = resultLengthPtr,
+						.mode=mode};
+
+
+	Std_ReturnType processRequest = Csm_processRequest(jobId, NewJobPrimitiveInputOutput);
+
+	return processRequest;
+
+}
+
+/************************************************************************************
+ * Service Name: Csm_Decrypt
+ * Service ID[hex]: 0x5f
+ * Sync/Async: Depends on configuration
+ * Reentrancy: Reentrant
+ * Parameters (in): 	uint32 jobId,
+ 						Crypto_OperationModeType mode,
+ 						const uint8* dataPtr,
+ 						uint32 dataLength
+ * Parameters (inout): None
+ * Parameters (out): Std_ReturnType
+ * Return value: None
+ * Description: Decrypts the given encrypted data and store the decrypted plaintext in the memory location pointed by the result pointer.
+ ************************************************************************************/
+Std_ReturnType Csm_Decrypt (
+uint32 jobId,
+Crypto_OperationModeType mode,
+const uint8* dataPtr,
+uint32 dataLength,
+uint8* resultPtr,
+uint32* resultLengthPtr
+){
+	/*
+	 1. [SWS_Csm_91008]  While the CSM is not initialized and any function of the CSM
+	 API is called, except of CSM_Init() and Csm_GetVersionInfo(), the operation
+	 shall not be performed and CSM_E_UNINIT shall be reported to the DET when
+	 CsmDevErrorDetect is true
+	 */
+
+	if (Csm_State == CSM_STATE_UNINIT) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_UNINIT);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 2. [SWS_Csm_91009] If a pointer to null is passed to an API function and the
+	 corresponding input or output data are not re-directed to a key element, the operation
+	 shall not be performed and CSM_E_PARAM_POINTER shall be reported to the DET
+	 when CsmDevErrorDetect is true.
+	 */
+
+	if (dataPtr == NULL_PTR || resultPtr == NULL_PTR || resultLengthPtr == NULL_PTR) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_POINTER);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 3. [SWS_Csm_91011] If a CSM API with a ID handle in its interface is called and the
+	 ID handle is out of range, the operation shall not be performed and CSM_E_PARAM_HANDLE
+	 shall be reported to the DET when CsmDevErrorDetect is true.
+	 */
+
+	if (jobId >= CRYPTO_JOBS_NUM) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_HANDLE);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 4. [SWS_Csm_01091] If a CSM API with a job handle (called jobId) in its interface is
+	 called and the Crypto_ServiceInfoType of the job does not match the requested
+	 service, the operation shall not be performed and CSM_E_SERVICE_TYPE shall be
+	 reported to the DET when CsmDevErrorDetect is true.
+	 */
+
+	if (Crypto_Jobs[jobId]->jobPrimitiveInfo->primitiveInfo->service != CRYPTO_SIGNATUREVERIFY)
+	{
+#if (CSM_RUNTIME_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_SERVICE_TYPE);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	/*
+	 5. [SWS_Csm_01088] If a CSM job needs to be queued and the queue is full, the
+	 runtime error CSM_E_QUEUE_FULL shall be reported to the DET.
+	 */
+
+	if (queue.size == queue.capacity) {
+#if (CSM_RUNTIME_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_QUEUE_FULL);
+#endif
+		return CRYPTO_E_BUSY;
+	}
+
+
+	// check if jobId already in queue
+	sint8 res = getJob(jobId);
+
+	// already in queue
+	if(res != -1)
+	{
+		return V2X_E_NOT_OK;
+	}
+
+	Crypto_JobPrimitiveInputOutputType NewJobPrimitiveInputOutput = {
+			.inputPtr = dataPtr, .inputLength = dataLength, .outputPtr =
+					resultPtr, .outputLengthPtr = resultLengthPtr,
+						.mode=mode};
+
+
+	Std_ReturnType processRequest = Csm_processRequest(jobId, NewJobPrimitiveInputOutput);
+
+	return processRequest;
+
+}
+
 
 Std_ReturnType Csm_KeyElementSet (uint32 keyId,uint32 keyElementId,const uint8* keyElementPtr,uint32 keyElementLength)
 {
