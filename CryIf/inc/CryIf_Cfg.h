@@ -44,6 +44,7 @@ Specifies to which Crypto Driver Object the crypto channel is connected to */
 #define CRYIF_KEY_ID1                     (0U)
 #define CRYIF_KEY_ID2					(1U)
 #define CRYIF_KEY_ID3					(2U)
+#define CRYIF_KEY_ID4					(3U)
 
 
 

@@ -307,7 +307,7 @@ int main() {
 
     int i;
     
-    uint64_t input = 0x9474B8E8C73BCA7D;
+    uint64_t input = 0x0123456789ABCDEF;
     uint64_t key = 0x0000000000000000;
     uint64_t result = input;
     
@@ -337,17 +337,18 @@ int main() {
      */
     for (i = 0; i < 16; i++) {
         
-        if (i%2 == 0) {
+       // if (i%2 == 0) {
             
             result = des(result, result, 'e');
             printf ("E: %016llx\n", result);
             
-        } else {
+        //} else {
             
-            result = des(result, result, 'd');
-            printf ("D: %016llx\n", result);
+           // result = des(result, result, 'd');
+        
+            //printf ("D: %016llx\n", result);
             
-        }
+        //}
     }
     
     //result = des(input, key, 'e');

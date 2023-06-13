@@ -88,7 +88,7 @@ const Crypto_JobPrimitiveInfoType hash_info=
 const Crypto_AlgorithmInfoType ecdh_algo_info =
 {       CRYPTO_ALGOFAM_ECDH,
 		CRYPTO_ALGOFAM_NOT_SET,
-		KEY_LENGTH_USED,
+		KEY_LENGTH_USED,//key-length = 192
 		CRYPTO_ALGOMODE_NOT_SET};
 const Crypto_PrimitiveInfoType ecdh_primitiveInfo ={32,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
 
@@ -96,16 +96,19 @@ const Crypto_JobPrimitiveInfoType ecdh_info=
 {2,&ecdh_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
 
 /* Encrypt Structs*/
-const Crypto_AlgorithmInfoType ecdh_algo_info =
+const Crypto_AlgorithmInfoType 3-des_algo_info =
 {       CRYPTO_ALGOFAM_3DES,
 		CRYPTO_ALGOFAM_NOT_SET,
-		KEY_LENGTH_USED,
-		CRYPTO_ALGOMODE_NOT_SET};
-const Crypto_PrimitiveInfoType ecdh_primitiveInfo ={32,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
+		KEY_LENGTH_USED,//key-length = 192
+		CRYPTO_ALGOMODE_ECB};
 
-const Crypto_JobPrimitiveInfoType ecdh_info=
-{2,&ecdh_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
+const Crypto_PrimitiveInfoType Encrypt_primitiveInfo ={64,CRYPTO_ENCRYPT,3-des_algo_info};
+const Crypto_PrimitiveInfoType Decrypt_primitiveInfo ={64,CRYPTO_DECRYPT,3-des_algo_info};
 
+const Crypto_JobPrimitiveInfoType Encrypt_info=
+{2,&Encrypt_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
+const Crypto_JobPrimitiveInfoType Decrypt_info=
+{2,&Decrypt_primitiveInfo,CRYIF_KEY_ID4,CRYPTO_PROCESSING_ASYNC,FALSE};
 
 /*
 const CsmJob generateSignatureCsmJob = {
