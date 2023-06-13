@@ -20,17 +20,18 @@
 
 #endif
 
-#define CRYPTO_JOBS_NUM 3
+#define CRYPTO_JOBS_NUM 4
 
 STATIC Csm_StateType Csm_State = CSM_STATE_UNINIT;
 uint32 QueueLoopCounter = 0;
 
 Crypto_QueueType queue;
-Crypto_JobType Crypto_JobType_SignatureGenerate =
+
+Crypto_JobType Crypto_JobType_KeyExchange =
 {.jobId=CSM_JOB_ID1,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_SIGNATURE_GENERATE},
-		.jobPriority= JOB_PRIORITY_SIGNATURE_GENERATE,
+		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_KEY_EXCHANGE},
+		.jobPriority= JOB_PRIORITY_KEY_EXCHANGE,
 		.jobPrimitiveInfo=&signature_info};
 
 Crypto_JobType Crypto_JobType_SignatureVerify =

@@ -33,10 +33,10 @@
  CsmQueues in the CSM.
 
  */
-const CsmCallback CsmJobPrimitiveCallbackRef[3]=
+/*const CsmCallback CsmJobPrimitiveCallbackRef[3]=
 		{&V2xM_GenerateCallbackNotification
 		,&V2xM_VerifyCallbackNotification,
-		&V2xM_HashCallbackNotification };
+		&V2xM_HashCallbackNotification };*/
 
 const CsmSignatureGenerateConfig CsmJobPrimitiveRef1=
 { CRYPTO_ALGOFAM_ECCSEC, CRYPTO_ALGOMODE_NOT_SET, CRYPTO_ALGOFAM_NOT_SET, KEY_LENGTH_USED };
@@ -84,8 +84,27 @@ const Crypto_PrimitiveInfoType hash_primitiveInfo ={32,CRYPTO_HASH,hash_algo_inf
 const Crypto_JobPrimitiveInfoType hash_info=
 {2,&hash_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
 
+/*Key Exchange Structs*/
+const Crypto_AlgorithmInfoType ecdh_algo_info =
+{       CRYPTO_ALGOFAM_ECDH,
+		CRYPTO_ALGOFAM_NOT_SET,
+		KEY_LENGTH_USED,
+		CRYPTO_ALGOMODE_NOT_SET};
+const Crypto_PrimitiveInfoType ecdh_primitiveInfo ={32,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
 
+const Crypto_JobPrimitiveInfoType ecdh_info=
+{2,&ecdh_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
 
+/* Encrypt Structs*/
+const Crypto_AlgorithmInfoType ecdh_algo_info =
+{       CRYPTO_ALGOFAM_3DES,
+		CRYPTO_ALGOFAM_NOT_SET,
+		KEY_LENGTH_USED,
+		CRYPTO_ALGOMODE_NOT_SET};
+const Crypto_PrimitiveInfoType ecdh_primitiveInfo ={32,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
+
+const Crypto_JobPrimitiveInfoType ecdh_info=
+{2,&ecdh_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
 
 
 /*
