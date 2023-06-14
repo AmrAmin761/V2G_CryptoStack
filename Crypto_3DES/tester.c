@@ -313,7 +313,7 @@ void convertToBinary(int n)
  
 int convertCharToBit(long int n)
 {
-    FILE *inp = fopen("input.txt", "rb");
+    FILE *inp = fopen("input.txt", "r");
     out = fopen("1.txt", "wb+");
     char ch;
  
@@ -624,7 +624,7 @@ int main()
     unsigned int key[192];
     create16Keys(key);
  
-    long int n = findFileSize() / 8;
+    long int n = (findFileSize() / 8);
     convertCharToBit(n);
  
     // Encryption starts

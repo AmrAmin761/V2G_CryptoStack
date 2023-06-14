@@ -163,6 +163,10 @@ unsigned int key[192] = {0x00,0x00,0x00,0x01,0x00,0x00,0x01,0x01,0x00,0x00,0x01,
 0x01,0x01,0x00,0x00,0x00,0x01};
 
 
+//Message buffer length must be divisible by 8
+char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is disc AMMAR B"};
+//char message[] = {"Breks El Beks Loves Borgir"};
+
 void expansion_function(int pos, int text)
 {
     for (int i = 0; i < 48; i++)
@@ -321,23 +325,25 @@ void convertToBinary(int n)
  
 int convertCharToBit(long int n)
 {
-    FILE *inp = fopen("input.txt", "rb");
+   // FILE *inp = fopen("input.txt", "rb");
     out = fopen("1.txt", "wb+");
     char ch;
  
-    int i = n * 8;
+    int i = n * 8; 
+    int j = 0;
     while (i)
     {
-        ch = fgetc(inp);
-        if (ch == -1) {
+        ch = message[j];   
+        if (ch == '\0') {
             break;
         }
         i--;
+        j++;
         convertToBinary(ch);
     }
  
     fclose(out);
-    fclose(inp);
+ //   fclose(inp);
 }
  
 void convertToBits(int ch[])
@@ -636,7 +642,13 @@ int main()
  */
 
 
-    long int n = findFileSize() / 8;
+    //long int n = findFileSize() / 8;
+    int n = 1;
+    for(int i = 0; message[i] != '\0';i++)
+    {
+        n++;
+    }
+    n = (n/8);
     convertCharToBit(n);
  
     // Encryption starts
