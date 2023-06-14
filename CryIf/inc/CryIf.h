@@ -162,7 +162,8 @@ uint32 keyElementId,
 const uint8* keyPtr,
 uint32 keyLength
 );
-
+Std_ReturnType CryIf_KeyExchangeCalcPubVal (uint32 CryIfKeyId, uint8* publicValuePtr , uint32* publicValueLengthPtr);
+Std_ReturnType CryIf_KeyExchangeCalcSecret (uint32 cryIfKeyId, const uint8* partnerPublicValuePtr, uint32 partnerPublicValueLength);
 
 
 /*******************************************************************************

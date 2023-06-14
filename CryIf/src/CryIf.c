@@ -195,3 +195,104 @@ return Crypto_KeyElementSet (
 		);
 
 }
+
+/************************************************************************************
+ * Service Name: CryIf_KeyExchangeCalcPubVal
+ * Service ID[hex]: 0x0a
+ * Sync/Async: Synchronous
+ * Reentrancy: Reentrant
+ * Parameters (in): cryIfKeyId - Holds the identifier of the key which shall be used for the key exchange protocol
+ * Parameters (inout): public Value LengthPtr - Holds a pointer to the memory location in which the public value length
+ * information is stored. On calling this function, this parameter shall
+ * contain the size of the buffer provided by publicValuePtr. When the
+ * request has finished, the actual length of the returned value shall be
+ * stored.
+ * Parameters (out): public ValuePtr - Contains the pointer to the data where the public value shall be stored.
+ * Description: This function shall dispatch the key exchange public value calculation function to the
+ * configured crypto driver object.
+ * Requirements: [SWS_CryIf_00082] [SWS_CryIf_00083]  [SWS_CryIf_00084]  [SWS_CryIf_00085]  [SWS_CryIf_00086]  [SWS_CryIf_00087]
+ ************************************************************************************/
+
+Std_ReturnType CryIf_KeyExchangeCalcPubVal (uint32 CryIfKeyId, uint8* publicValuePtr , uint32* publicValueLengthPtr)
+{
+#if (CRYIF_DEV_ERROR_DETECT == STD_ON)
+	if(CRYIF_NOT_INITIALIZED == CryIf_status)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID ,CRYIF_E_UNINIT);
+		return V2X_E_NOT_OK;
+	}
+	else if (CryIfKeyId > cryIfkey.CryIfKeyId )
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_HANDLE);
+		return V2X_E_NOT_OK;
+	}
+	else if (publicValuePtr == NULL_PTR)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_POINTER);
+		return V2X_E_NOT_OK;
+	}
+	else if (publicValueLengthPtr == NULL_PTR)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_POINTER);
+		return V2X_E_NOT_OK;
+	}
+	else if (*publicValueLengthPtr == 0)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_VALUE);
+		return V2X_E_NOT_OK;
+	}
+	else
+#endif
+	{
+		//uint32 actualLength = CryIf_KeyExchangeCalcPubVal(CryIfKeyId, publicValuePtr, *publicValueLengthPtr);
+
+	}
+}
+
+
+/************************************************************************************
+ * Service Name: CryIf_KeyExchangeCalcSecret
+ * Service ID[hex]: 0x0b
+ * Sync/Async: Synchronous
+ * Reentrancy: Reentrant
+ * Parameters (in): cryIfKeyId - Holds the identifier of the key which shall be used for the key exchange protocol
+ * partnerPublic ValuePtr - Holds the pointer to the memory location which contains the partner's public value.
+ * partnerPublic ValueLength - Contains the length of the partner's public value in bytes.
+ * Parameters (inout): none
+ * Parameters (out): none
+ * Description: This function shall dispatch the key exchange common shared secret calculation 
+ * function to the configured crypto driver object.
+ * Requirements: [SWS_CryIf_00090] [SWS_CryIf_00091]  [SWS_CryIf_00092] [SWS_CryIf_00094] [SWS_CryIf_00095]
+ ************************************************************************************/
+
+Std_ReturnType CryIf_KeyExchangeCalcSecret (uint32 cryIfKeyId, const uint8* partnerPublicValuePtr, uint32 partnerPublicValueLength)
+{
+#if (CRYIF_DEV_ERROR_DETECT == STD_ON)
+	if(CRYIF_NOT_INITIALIZED == CryIf_status)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID ,CRYIF_E_UNINIT);
+		return V2X_E_NOT_OK;
+	}
+	else if (cryIfKeyId > cryIfkey.CryIfKeyId )
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_HANDLE);
+		return V2X_E_NOT_OK;
+	}
+	else if (partnerPublicValuePtr == NULL_PTR)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_POINTER);
+		return V2X_E_NOT_OK;
+	}
+	else if (*partnerPublicValueLength == 0)
+	{
+		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID,CRYIF_E_PARAM_VALUE);
+		return V2X_E_NOT_OK;
+	}
+	else
+#endif
+	{
+
+
+		Csm_CallbackNotification(job,result);
+	}
+}
