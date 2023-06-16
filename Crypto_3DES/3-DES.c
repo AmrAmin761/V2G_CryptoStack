@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 #include <time.h>
  
 int IP[] =
@@ -164,8 +165,17 @@ unsigned int key[192] = {0x00,0x00,0x00,0x01,0x00,0x00,0x01,0x01,0x00,0x00,0x01,
 
 
 //Message buffer length must be divisible by 8
-char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is disc AMMAR B"};
+char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Gamed"};
 //char message[] = {"Breks El Beks Loves Borgir"};
+
+char temp1[4096];
+long temp1Index = 0;
+
+char temp2[4096];
+long temp2Index = 0;
+
+char result[512] = {0};
+long resultIndex = 0;
 
 void expansion_function(int pos, int text)
 {
@@ -315,18 +325,20 @@ void convertToBinary(int n)
         m = 1 << i;
         k = n & m;
         if (k == 0) {
-            fprintf(out, "0");
+            //fprintf(out, "0");
+            temp1[temp1Index] = 0x00;
         }
         else {
-            fprintf(out, "1");
+            temp1[temp1Index] = 0x01;
         }
+        temp1Index++;
     }
 }
  
 int convertCharToBit(long int n)
 {
    // FILE *inp = fopen("input.txt", "rb");
-    out = fopen("1.txt", "wb+");
+   // out = fopen("1.txt", "wb+");
     char ch;
  
     int i = n * 8; 
@@ -342,7 +354,7 @@ int convertCharToBit(long int n)
         convertToBinary(ch);
     }
  
-    fclose(out);
+ //   fclose(out);
  //   fclose(inp);
 }
  
@@ -353,16 +365,16 @@ void convertToBits(int ch[])
         value += (int)pow(2, i) * ch[7 - i];
     }
  
-    fprintf(out, "%c", value);
+    result[resultIndex++] = value;
 }
  
 int bittochar()
 {
-    out = fopen("result.txt", "ab+");
+    //out = fopen("result.txt", "ab+");
     for (int i = 0; i < 64; i = i + 8) {
         convertToBits(&ENCRYPTED[i]);
     }
-    fclose(out);
+    //fclose(out);
 }
  
 void key56to48(int round, int pos, int text)
@@ -463,7 +475,7 @@ void key64to48(unsigned int key[])
  
 void Encryption(long int plain[])
 {
-    out = fopen("2.txt", "ab+");
+    //out = fopen("2.txt", "ab+");
     for (int i = 0; i < 64; i++) {
         initialPermutation(i, plain[i]);
     }
@@ -497,15 +509,17 @@ void Encryption(long int plain[])
     }
  
     for (int i = 0; i < 64; i++) {
-        fprintf(out, "%d", ENCRYPTED[i]);
+        //fprintf(out, "%d", ENCRYPTED[i]);
+        temp2[temp2Index] = ENCRYPTED[i];
+        temp2Index++;
     }
  
-    fclose(out);
+    //fclose(out);
 }
  
 void Decryption(long int plain[])
 {
-    out = fopen("1.txt", "ab+");
+   // out = fopen("1.txt", "ab+");
     for (int i = 0; i < 64; i++) {
         initialPermutation(i, plain[i]);
     }
@@ -539,30 +553,42 @@ void Decryption(long int plain[])
     }
  
     for (int i = 0; i < 64; i++) {
-        fprintf(out, "%d", ENCRYPTED[i]);
+        //fprintf(out, "%d", ENCRYPTED[i]);
+        temp1[temp1Index] = ENCRYPTED[i];
+        temp1Index++;
     }
  
-    fclose(out);
+  //  fclose(out);
 }
  
-void decrypt(long int n, char *str)
+void decrypt(long int n)
 {
     // destroy contents of these files (from previous runs)
-    FILE *out = fopen("1.txt", "wb+");
-    fclose(out);
+    //FILE *out = fopen("1.txt", "wb+");
+    //fclose(out);
+   
+    memset(temp1, 0, sizeof(temp1));
+    temp1Index = 0;
+
+   // out = fopen("result.txt", "wb+");
+   // fclose(out);
+
+    memset(result, 0, sizeof(result));
+    resultIndex = 0;
+
  
-    out = fopen("result.txt", "wb+");
-    fclose(out);
- 
-    FILE *in = fopen(str, "rb");
+    //FILE *in = fopen(str, "rb");
+    
+
     long int plain[n * 64];
-    int i = -1;
+    int i = -1, j = 0;
     char ch;
  
-    while (!feof(in))
+    while (j < temp2Index)
     {
-        ch = getc(in);
-        plain[++i] = ch - 48;
+        ch = temp2[j];
+        plain[++i] = ch;
+        j++;
     }
  
     for (int i = 0; i < n; i++)
@@ -571,69 +597,37 @@ void decrypt(long int n, char *str)
         bittochar();
     }
  
-    fclose(in);
+   // fclose(in);
 }
  
-void encrypt(long int n, char *str)
+void encrypt(long int n)
 {
     // destroy contents of this file (from previous runs)
-    FILE *out = fopen("2.txt", "wb+");
-    fclose(out);
- 
-    FILE *in = fopen(str, "rb");
+    
+    memset(temp2, 0, sizeof(temp2));
+    temp2Index = 0;
+
+   // FILE *in = fopen(str, "rb");
  
     long int plain[n * 64];
-    int i = -1;
+    int i = -1,j = 0;
     char ch;
  
-    while (!feof(in))
+    while (j < temp1Index)
     {
-        ch = getc(in);
-        plain[++i] = ch - 48;
+        ch = temp1[j];
+       // printf("%x",temp1[i] );
+        plain[++i] = ch;
+        j++;
     }
  
     for (int i = 0; i < n; i++) {
         Encryption(plain + 64 * i);
     }
  
-    fclose(in);
- 
+  
 }
- /*
-void create16Keys(unsigned int key[])
-{
-   // FILE *pt = fopen("key.txt", "rb");
- 
-    int i = 0;
- 
-    while (i < 192)
-    {
-        
-        key[i] = fullkeys[i];
-        i++;
-    }
- 
-//    fclose(pt);
-}
- */
-long int findFileSize()
-{
-    FILE *inp = fopen("input.txt", "rb");
-    long int size;
- 
-    if (fseek(inp, 0L, SEEK_END)) {
-        perror("fseek() failed");
-    }
-    // size will contain number of chars in the input file.
-    else {
-        size = ftell(inp);
-    }
- 
-    fclose(inp);
- 
-    return size;
-}
- 
+
 int main()
 {
     /*
@@ -655,25 +649,26 @@ int main()
     // DES encrypt with `K1`, DES decrypt with `K2`, then DES encrypt with `K3`.
  
     key64to48(key);
-    encrypt(n, "1.txt");    // convert 1.txt to 2.txt using `K1`
+    encrypt(n);    // convert 1.txt to 2.txt using `K1`
  
     key64to48(key + 64);
-    decrypt(n, "2.txt");    // convert 2.txt to 1.txt using `K2`
+    decrypt(n);    // convert 2.txt to 1.txt using `K2`
  
     key64to48(key + 128);
-    encrypt(n, "1.txt");    // convert 1.txt to 2.txt using `K3`
+    encrypt(n);    // convert 1.txt to 2.txt using `K3`
  
     // Decryption starts (reverse of Encryption)
     // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
  
     key64to48(key + 128);
-    decrypt(n, "2.txt");    // convert 2.txt to 1.txt using `K3`
+    decrypt(n);    // convert 2.txt to 1.txt using `K3`
  
     key64to48(key + 64);
-    encrypt(n, "1.txt");    // convert 1.txt to 2.txt using `K2`
+    encrypt(n);    // convert 1.txt to 2.txt using `K2`
  
     key64to48(key);
-    decrypt(n, "2.txt");    // convert 2.txt to 1.txt using `K1`
+    decrypt(n);    // convert 2.txt to 1.txt using `K1`
  
+    printf("%s\n", result);
     return 0;
 }
