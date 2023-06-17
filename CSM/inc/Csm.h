@@ -42,7 +42,7 @@
 
 /* Csm Pre-Compile Configuration Header file */
 #include "Csm_Cfg.h"
-#include "../../V2xM/inc/V2xM.h"
+
 /* AUTOSAR Version checking between Csm_Cfg.h and Csm.h files
  * Requirement: SWS_EthIf_00007
  *
