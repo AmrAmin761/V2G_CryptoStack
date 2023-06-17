@@ -251,7 +251,15 @@ Std_ReturnType Csm_SignatureGenerate(uint32 jobId,
 Std_ReturnType Csm_SignatureVerify(uint32 jobId, Crypto_OperationModeType mode,
 		const uint8 *dataPtr, uint32 dataLength, uint8 *signaturePtr,
 		uint32 signatureLengthPtr, Crypto_VerifyResultType *verifyPtr);
-
+Std_ReturnType Csm_Encrypt (uint32 jobId,Crypto_OperationModeType mode,const uint8* dataPtr,uint32 dataLength,uint8* resultPtr,uint32* resultLengthPtr);
+Std_ReturnType Csm_Decrypt (
+uint32 jobId,
+Crypto_OperationModeType mode,
+const uint8* dataPtr,
+uint32 dataLength,
+uint8* resultPtr,
+uint32* resultLengthPtr
+);
 void Csm_CallbackNotification(Crypto_JobType* job,Crypto_ResultType result);
 void Csm_MainFunction(void);
 Std_ReturnType Csm_KeyElementSet (uint32 keyId,uint32 keyElementId,const uint8* keyElementPtr,uint32 keyElementLength);

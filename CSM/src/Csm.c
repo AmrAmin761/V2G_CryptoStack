@@ -967,8 +967,56 @@ uint32* resultLengthPtr
 	return processRequest;
 
 }
+/************************************************************************************
+ * Service Name: Csm_KeyExchangeCalcPubVal
+ * Service ID[hex]: 0x6c
+ * Sync/Async: Depends on configuration
+ * Reentrancy: Reentrant but not for same keyId
+ * Parameters (in): 	uint32 keyId,
+ * 						uint8* publicValuePtr,
+ *						uint32* publicValueLengthPtr						
+ * Parameters (inout): None
+ * Parameters (out): Std_ReturnType
+ * Return value: None
+ * Description: Calculates the public value of the current user for the key exchange and stores the
+public key in the memory location pointed by the public value pointer.
+ ************************************************************************************/
+Std_ReturnType Csm_KeyExchangeCalcPubVal (
+uint32 keyId,
+uint8* publicValuePtr,
+uint32* publicValueLengthPtr
+){
+	/*
+	 1. [SWS_Csm_91008]  While the CSM is not initialized and any function of the CSM
+	 API is called, except of CSM_Init() and Csm_GetVersionInfo(), the operation
+	 shall not be performed and CSM_E_UNINIT shall be reported to the DET when
+	 CsmDevErrorDetect is true
+	 */
 
+	if (Csm_State == CSM_STATE_UNINIT) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_UNINIT);
+#endif
+		return V2X_E_NOT_OK;
+	}
+	/*
+	 2. [SWS_Csm_91009] If a pointer to null is passed to an API function and the
+	 corresponding input or output data are not re-directed to a key element, the operation
+	 shall not be performed and CSM_E_PARAM_POINTER shall be reported to the DET
+	 when CsmDevErrorDetect is true.
+	 */
 
+	if (publicValuePtr == NULL_PTR || publicValueLengthPtr == NULL_PTR) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_POINTER);
+#endif
+		return V2X_E_NOT_OK;
+	}
+}
 Std_ReturnType Csm_KeyElementSet (uint32 keyId,uint32 keyElementId,const uint8* keyElementPtr,uint32 keyElementLength)
 {
 
