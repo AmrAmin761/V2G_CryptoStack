@@ -64,7 +64,7 @@
 #define Crypto_INITIALIZED                (1U)
 #define Crypto_NOT_INITIALIZED            (0U)
 
-#define CRYPTO_IDEAL_STATE                          (0U)
+#define CRYPTO_IDLE_STATE                          (0U)
 #define CRYPTO_ACTIVE_STATE                        (1U)
 #define KEY_VALID   (1U)
 #define KEY_NOT_VALID (0U)
@@ -81,6 +81,8 @@
 #define CRYPTO_PROCESS_JOB_SID						(uint8)0x03
 
 #define CRYPTO_CANCEL_JOB_SID					(uint8)0x0e
+#define CRYPTO_KEY_EXCHANGE_CALC_PUB_VAL_SID 	(uint8)0x09
+#define CRYPTO_KEY_EXCHANGE_CALC_SECRET_SID 	(uint8)0x0a
 #define CRYPTO_MAIN_FUNCTION_SID 				(uint8)0x0c
 
 #define  CRYPTO_KEYELEMENTSET_SID			(uint8)0x04

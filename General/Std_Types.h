@@ -70,13 +70,4 @@ typedef struct
 
 #define V2X_E_OK            ((Std_ReturnType)0x00U)      /* Function Return OK */
 #define V2X_E_NOT_OK        ((Std_ReturnType)0x01U)      /* Function Return NOT OK */
-#define CRYPTO_E_BUSY   ((Std_ReturnType)0x02U)
-#define TO_E_ENTROPY_EXHAUSTED  ((Std_ReturnType)0x04U)
-#define CRYPTO_E_KEY_READ_FAIL  ((Std_ReturnType)0x06U)
-#define CRYPTO_E_KEY_WRITE_FAIL ((Std_ReturnType)0x07U)
-#define CRYPTO_E_KEY_NOT_AVAILABLE  ((Std_ReturnType)0x08U)
-#define CRYPTO_E_KEY_NOT_VALID    ((Std_ReturnType)0x09U)
-#define CRYPTO_E_KEY_SIZE_MISMATCH  ((Std_ReturnType)0x0AU)
-#define TO_E_JOB_CANCELED       ((Std_ReturnType)0x0CU)
-#define CRYPTO_E_KEY_EMPTY    ((Std_ReturnType)0x0DU)
 #endif /* STD_TYPES_H */

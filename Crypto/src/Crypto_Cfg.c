@@ -30,7 +30,8 @@ CryptoDriverObjectType CryptoMbedTlsObject =
 		CRYPTO_ALGOMODE_NOT_SET,
 		CRYPTO_ALGOFAM_NOT_SET,/* Secondary family */
 		CRYPTO_SIGNATUREGENERATE,
-		TRUE};
+		TRUE
+};
 
 /* struct for cryptoPrimitives used through verification process*/
  CryptoPrimitive verifyGenerateCryptoPrimitive =

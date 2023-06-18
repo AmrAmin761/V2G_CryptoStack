@@ -8,15 +8,17 @@
 #include "../../CryIf/inc/CryIf.h"
 #include "../../Crypto_ecdsa/Crypto_ECDSA_Signature_Generate.h"
 #include "../../Crypto_ecdsa/Crypto_ECDSA_Signature_Verify.h"
-
-
+#include "../.."
+#include "../../Crypto_ECDH/inc/Crypto_ECDH.h"
 #include "../../SPI/inc/PLL.h"
 
 #include "time.h"
 
 #define DEBUG_MODE       STD_OFF
 
-
+static uint8_t puba[ECC_PUB_KEY_SIZE];
+static uint8_t prva[ECC_PRV_KEY_SIZE];
+static uint8_t seca[ECC_PUB_KEY_SIZE];
 /* Pointer to all private keys  */
 GenerationKeyInfoType GenerationKey ;
 
@@ -135,18 +137,20 @@ void deleteNextJob()
 * Description:  Initializes the Crypto Driver
 * Requirements: SWS_Crypto_00215, SWS_Crypto_00198, SWS_Crypto_00045
 ************************************************************************************/
-void Crypto_Init(const Crypto_ConfigType* configPtr){
+void Crypto_Init(const Crypto_ConfigType* configPtr)
+{
 // configPtr shall always have a null pointer value
 // retrieve the key from NvM
-NvM_ReadBlock(EccSignatureGenerateKey.CryptoNvBlockDescriptorRef->NvramBlockIdentifier, (uint8*)GenerationKey.PrivateKeys);
-Crypto_Status= Crypto_INITIALIZED;
-Crypto_State = CRYPTO_IDEAL_STATE;
-jobQueue.front=0;
-jobQueue.rear=-1;
-jobQueue.size =0;
-
-
+	NvM_ReadBlock(EccSignatureGenerateKey.CryptoNvBlockDescriptorRef->NvramBlockIdentifier, (uint8*)GenerationKey.PrivateKeys);
+	Crypto_Status= Crypto_INITIALIZED;
+	Crypto_State = CRYPTO_IDLE_STATE;
+	jobQueue.front=0;
+	jobQueue.rear=-1;
+	jobQueue.size =0;
 }
+/******************************************************
+add getVERSION HERE
+******************************************************/
 /************************************************************************************
 * Service Name: Crypto_<vi>_<ai>_NvBlock_ReadFrom_<NvBlock>
 * Service ID[hex]: 0x17
@@ -266,7 +270,7 @@ Std_ReturnType Crypto_ProcessJob (uint32 objectId,Crypto_JobType* job)
 #endif
 
     // save current job id
-    current_Job_id =job->jobId;
+    current_Job_id = job->jobId;
     // check if job already in array, and need to start again reset the previous one
     sint8 res = getJob(job->jobId);
     // already in queue
@@ -683,6 +687,111 @@ Std_ReturnType Crypto_KeyElementSet (
 }
 
 
+/************************************************************************************
+* Service Name: Crypto_KeyExchangeCalcPubVal
+* Service ID[hex]: 0x09
+* Sync/Async: Synchronous
+* Reentrancy: Reentrant but not for the same cryptoKeyId
+* Parameters (in): cryptoKeyId Holds the identifier of the key which shall be used for the key exchange 
+					protocol.
+* Parameters (inout): publicValueLengthPtr Holds a pointer to the memory location in which the public value length 
+					information is stored. On calling this function, this parameter shall 
+					contain the size of the buffer provided by publicValuePtr. When the 
+					request has finished, the actual length of the returned value shall be 
+					stored.
+* Parameters (out): publicValuePtr Contains the pointer to the data where the public value shall be stored.
+* Return value: Std_ReturnType
+* Description: This interface removes the provided job from the queue and cancels the processing of the job if possible
+* Requirements:
+************************************************************************************/
+Std_ReturnType Crypto_KeyExchangeCalcPubVal (
+uint32 cryptoKeyId,
+uint8* publicValuePtr,
+uint32* publicValueLengthPtr
+)
+{
+	#if (CRYPTO_DEV_ERROR_DETECT == STD_ON)
+	/* Check if the Module is initialized before using this function */
+	if (Crypto_NOT_INITIALIZED == Crypto_Status)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_PUB_VAL_SID, CRYPTO_E_UNINIT_ID);
+		return V2X_E_NOT_OK;
+	}
+/*
+	if(cryptoKeyId != CRYPTO_DRIVER_OBJECT_ID)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_CANCEL_JOB_SID, CRYPTO_E_PARAM_HANDLE_ID );
+		return V2X_E_NOT_OK;
+	}
+*/
+	if(NULL_PTR == publicValueLengthPtr)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_PUB_VAL_SID, CRYPTO_E_PARAM_POINTER_ID );
+		return V2X_E_NOT_OK;
+	}
+#endif
+
+	static int initialized = 0;
+  	if (!initialized)
+  	{
+    	prng_init((0xbad ^ 0xc0ffee ^ 42) | 0xcafebabe | 666);
+    	initialized = 1;
+  	}
+	for (i = 0; i < ECC_PRV_KEY_SIZE; ++i)
+  	{
+    	prva[i] = prng_next();
+  	}
+  	assert(ecdh_generate_keys(puba, prva));
+	publicValuePtr = &puba;
+	*publicValueLengthPtr = ECC_PUB_KEY_SIZE;
+	return CRYPTO_V2X_E_OK;
+}
 
 
+/************************************************************************************
+* Service Name: Crypto_KeyExchangeCalcPubVal
+* Service ID[hex]: 0x0a
+* Sync/Async: Synchronous
+* Reentrancy: Reentrant but not for the same cryptoKeyId
+* Parameters (in): cryptoKeyId Holds the identifier of the key which shall be used for the key exchange 
+					protocol.
+				    partnerPublicValuePtr Holds the pointer to the memory location which contains the partner's public value
+					partnerPublicValueLength Contains the length of the partner's public value in bytes.					
+* Return value: Std_ReturnType
+* Description: Calculates the shared secret key for the key exchange with
+				the key material of the key identified by the cryptoKeyId and the partner public key. The shared secret key 
+			  	is stored as a key element in the same key.
+* Requirements:
+************************************************************************************/
+Std_ReturnType Crypto_KeyExchangeCalcSecret (
+uint32 cryptoKeyId,
+uint8* partnerPublicValuePtr,
+uint32* partnerPublicValueLength
+)
+{
+#if (CRYPTO_DEV_ERROR_DETECT == STD_ON)
+	/* Check if the Module is initialized before using this function */
+	if (Crypto_NOT_INITIALIZED == Crypto_Status)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_SECRET_SID, CRYPTO_E_UNINIT_ID);
+		return V2X_E_NOT_OK;
+	}
+	//change to keyId out of range
+	if(cryptoKeyId > CRYPTO_KEY_ELEMENTS_NUMBER)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_SECRET_SID, CRYPTO_E_PARAM_HANDLE_ID );
+		return V2X_E_NOT_OK;
+	}
 
+	if(NULL_PTR == partnerPublicValuePtr)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_SECRET_SID, CRYPTO_E_PARAM_POINTER_ID );
+		return V2X_E_NOT_OK;
+	}
+	if(NULL_PTR == partnerPublicValueLength)
+	{
+		Det_ReportError(CRYPTO_MODULE_ID, CRYPTO_INSTANCE_ID, CRYPTO_KEY_EXCHANGE_CALC_SECRET_SID, CRYPTO_E_PARAM_POINTER_ID );
+		return V2X_E_NOT_OK;
+	}
+#endif
+}
