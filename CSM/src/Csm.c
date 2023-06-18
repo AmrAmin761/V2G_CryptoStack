@@ -46,7 +46,8 @@ Crypto_JobType Crypto_JobType_Encrypt =
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID2,JOB_PRIORITY_ENCRYPT},
 		.jobPriority= JOB_PRIORITY_ENCRYPT,
-		.jobPrimitiveInfo=&Encrypt_info};
+		.jobPrimitiveInfo=&Encrypt_info
+		};
 Crypto_JobType Crypto_JobType_Decrypt =
 {.jobId=CSM_JOB_ID3,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
@@ -941,7 +942,7 @@ uint32* resultLengthPtr
 		return CRYPTO_E_BUSY;
 	}
 
-
+	
 	// check if jobId already in queue
 	sint8 res = getJob(jobId);
 
@@ -958,6 +959,7 @@ uint32* resultLengthPtr
 
 
 	Std_ReturnType processRequest = Csm_processRequest(jobId, NewJobPrimitiveInputOutput);
+	
 
 	return processRequest;
 
