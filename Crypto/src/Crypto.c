@@ -794,4 +794,7 @@ uint32* partnerPublicValueLength
 		return V2X_E_NOT_OK;
 	}
 #endif
+	{
+		assert(ecdh_shared_secret(prva, pubb, seca));
+	}
 }
