@@ -27,19 +27,14 @@ uint32 QueueLoopCounter = 0;
 
 Crypto_QueueType queue;
 
-/*Crypto_JobType Crypto_JobType_KeyExchange =
-{.jobId=CSM_JOB_ID1,
-		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_KEY_EXCHANGE},
-		.jobPriority= JOB_PRIORITY_KEY_EXCHANGE,
-		.jobPrimitiveInfo=&signature_info};
+
 
 Crypto_JobType Crypto_JobType_SignatureVerify =
 {.jobId=CSM_JOB_ID2,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID2,JOB_PRIORITY_SIGNATURE_VERIFY},
 		.jobPriority= JOB_PRIORITY_SIGNATURE_VERIFY,
-		.jobPrimitiveInfo=&verify_info};*/
+		.jobPrimitiveInfo=&verify_info};
 Crypto_JobType Crypto_JobType_KeyExchange =
 {.jobId=CSM_JOB_ID1,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
@@ -66,7 +61,7 @@ Crypto_JobType Crypto_JobType_Hash =
 		.jobPrimitiveInfo=&hash_info};
 
 Crypto_JobType *Crypto_Jobs[MAX_QUEUE_SIZE] = {
-		&Crypto_JobType_KeyExchange,	
+			
 		&Crypto_JobType_Encrypt,
 		&Crypto_JobType_Decrypt,
 		&Crypto_JobType_Hash };
@@ -967,7 +962,112 @@ uint32* resultLengthPtr
 	return processRequest;
 
 }
+/************************************************************************************
+ * Service Name: Csm_KeyExchangeCalcPubVal
+ * Service ID[hex]: 0x6c
+ * Sync/Async: Synch
+ * Reentrancy: Reentrant but not for same keyId
+ * Parameters (in): 	uint32 keyId,
+ * 						uint8* publicValuePtr,
+ *						uint32* publicValueLengthPtr						
+ * Parameters (inout): None
+ * Parameters (out): Std_ReturnType
+ * Return value: None
+ * Description: Calculates the public value of the current user for the key exchange and stores the
+public key in the memory location pointed by the public value pointer.
+ ************************************************************************************/
+Std_ReturnType Csm_KeyExchangeCalcPubVal (
+uint32 keyId,
+uint8* publicValuePtr,
+uint32* publicValueLengthPtr
+){
+	/*
+	 1. [SWS_Csm_91008]  While the CSM is not initialized and any function of the CSM
+	 API is called, except of CSM_Init() and Csm_GetVersionInfo(), the operation
+	 shall not be performed and CSM_E_UNINIT shall be reported to the DET when
+	 CsmDevErrorDetect is true
+	 */
 
+	if (Csm_State == CSM_STATE_UNINIT) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_UNINIT);
+#endif
+		return V2X_E_NOT_OK;
+	}
+	/*
+	 2. [SWS_Csm_91009] If a pointer to null is passed to an API function and the
+	 corresponding input or output data are not re-directed to a key element, the operation
+	 shall not be performed and CSM_E_PARAM_POINTER shall be reported to the DET
+	 when CsmDevErrorDetect is true.
+	 */
+
+	if (publicValuePtr == NULL_PTR || publicValueLengthPtr == NULL_PTR) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_POINTER);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	Std_ReturnType result = CryIf_KeyExchangeCalcPubVal(keyId,publicValuePtr,publicValueLengthPtr);
+	return result;
+}
+/************************************************************************************
+ * Service Name: Csm_KeyExchangeCalcSecret
+ * Service ID[hex]: 0x6d
+ * Sync/Async: Synch
+ * Reentrancy: Reentrant but not for same keyId
+ * Parameters (in): 	uint32 keyId,
+ * 						uint8* partnerPublicValuePtr,
+ *						uint32* partnerPublicValueLengthPtr						
+ * Parameters (inout): None
+ * Parameters (out): Std_ReturnType
+ * Return value: None
+ * Description: Calculates the shared secret key for the key exchange with the key material of the
+ *	      key identified by the keyId and the partner public key. The shared secret key is stored as a key element in the same key.
+ ************************************************************************************/
+Std_ReturnType Csm_KeyExchangeCalcSecret (
+uint32 keyId,
+const uint8* partnerPublicValuePtr,
+uint32 partnerPublicValueLength
+){
+	/*
+	 1. [SWS_Csm_91008]  While the CSM is not initialized and any function of the CSM
+	 API is called, except of CSM_Init() and Csm_GetVersionInfo(), the operation
+	 shall not be performed and CSM_E_UNINIT shall be reported to the DET when
+	 CsmDevErrorDetect is true
+	 */
+
+	if (Csm_State == CSM_STATE_UNINIT) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_UNINIT);
+#endif
+		return V2X_E_NOT_OK;
+	}
+	/*
+	 2. [SWS_Csm_91009] If a pointer to null is passed to an API function and the
+	 corresponding input or output data are not re-directed to a key element, the operation
+	 shall not be performed and CSM_E_PARAM_POINTER shall be reported to the DET
+	 when CsmDevErrorDetect is true.
+	 */
+
+	if (partnerPublicValueLength == NULL_PTR || partnerPublicValuePtr == NULL_PTR) {
+#if (CSM_DEV_ERROR_DETECT == STD_ON)
+		Det_ReportError(CSM_MODULE_ID, CSM_INSTANCE_ID,
+		CSM_SIGNATURE_VERIFY_SID,
+		CSM_E_PARAM_POINTER);
+#endif
+		return V2X_E_NOT_OK;
+	}
+
+	Std_ReturnType result = CryIf_KeyExchangeCalcSecret(keyId,partnerPublicValuePtr,partnerPublicValueLength);
+	return result;
+}
 
 Std_ReturnType Csm_KeyElementSet (uint32 keyId,uint32 keyElementId,const uint8* keyElementPtr,uint32 keyElementLength)
 {

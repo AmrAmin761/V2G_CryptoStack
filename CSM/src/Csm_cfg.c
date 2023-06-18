@@ -110,7 +110,7 @@ const Crypto_JobPrimitiveInfoType Encrypt_info=
 const Crypto_JobPrimitiveInfoType Decrypt_info=
 {2,&Decrypt_primitiveInfo,CRYIF_KEY_ID4,CRYPTO_PROCESSING_ASYNC,FALSE};
 
-/*
+
 const CsmJob generateSignatureCsmJob = {
 CSM_JOB_ID1,
 USE_FNC,
@@ -134,4 +134,4 @@ USE_FNC, CRYPTO_PROCESSING_ASYNC, &csmKey, &CsmJobPrimitiveCallbackRef3,
 		&primitive1, &csmQueue };
 const CsmJob *CsmJobs[] = { &generateSignatureCsmJob, &verifySignatureCsmJob,
 		&hashCsmJob };
-*/
+
