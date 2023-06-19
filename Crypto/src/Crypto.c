@@ -812,5 +812,6 @@ uint32* partnerPublicValueLength
 #endif
 	{
 		assert(ecdh_shared_secret(prva, pubb, seca));
+		return CRYPTO_V2X_E_OK;
 	}
 }

@@ -111,7 +111,7 @@ Std_ReturnType CryIf_ProcessJob (uint32 channelId,Crypto_JobType* job)
 	if(CRYIF_NOT_INITIALIZED == CryIf_status)
 	{
 		Det_ReportError(CRYIF_MODULE_ID,CRYIF_INSTANCE_ID,CRYIF_PROCESSJOB_SID ,CRYIF_E_UNINIT);
-		return V2X_E_NOT_OK;
+		return V2X_E_N OT_OK;
 	}
 	else if (channelId > cryIfChannel1.CryIfChannelId )
 	{
@@ -244,6 +244,7 @@ Std_ReturnType CryIf_KeyExchangeCalcPubVal (uint32 CryIfKeyId, uint8* publicValu
 	else
 #endif
 	{
+		Crypto_KeyExchangeCalcPubVal(CryIfKeyId,publicValuePtr,publicValueLengthPtr);
 		//uint32 actualLength = CryIf_KeyExchangeCalcPubVal(CryIfKeyId, publicValuePtr, *publicValueLengthPtr);
 
 	}
@@ -291,8 +292,6 @@ Std_ReturnType CryIf_KeyExchangeCalcSecret (uint32 cryIfKeyId, const uint8* part
 	else
 #endif
 	{
-
-
-		Csm_CallbackNotification(job,result);
+		Crypto_KeyExchangeCalcSecret(cryIfKeyId,partnerPublicValuePtr,partnerPublicValueLength);
 	}
 }
