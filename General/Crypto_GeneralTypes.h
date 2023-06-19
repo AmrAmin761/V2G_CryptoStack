@@ -54,12 +54,14 @@ typedef struct {
 	uint64 *output64Ptr;
 	Crypto_OperationModeType mode;
 } Crypto_JobPrimitiveInputOutputType;
+
 typedef struct {
 
 	uint32 jobId;
 	uint32 jobPriority;
 
 } Crypto_JobInfoType;
+
 typedef enum {
 	CRYPTO_HASH,
 	CRYPTO_MACGENERATE,
@@ -74,7 +76,8 @@ typedef enum {
 	CRYPTO_RANDOMSEED,
 	CRYPTO_KEYGENERATE,
 	CRYPTO_KEYDERIVE,
-	CRYPTO_KEYEXCHANGECALCPUBVAL
+	CRYPTO_KEYEXCHANGECALCPUBVAL,
+	CRYPTO_KEYEXCHANGECALCSECRET
 } Crypto_ServiceInfoType;
 
 typedef enum {
@@ -152,17 +155,17 @@ typedef enum {
 
 typedef struct {
 	const Crypto_AlgorithmFamilyType family;
-const Crypto_AlgorithmFamilyType secondaryFamily;
+	const Crypto_AlgorithmFamilyType secondaryFamily;
 	const uint32 keyLength;
 	const Crypto_AlgorithmModeType mode;
-
 } Crypto_AlgorithmInfoType;
+
 typedef struct {
 	const uint32 resultLength;
 	const Crypto_ServiceInfoType service;
 	const Crypto_AlgorithmInfoType algorithm;
-
 } Crypto_PrimitiveInfoType;
+
 typedef enum {
 	CRYPTO_PROCESSING_ASYNC, CRYPTO_PROCESSING_SYNC
 } Crypto_ProcessingType;
@@ -175,6 +178,7 @@ typedef struct {
 	const boolean callbackUpdateNotification;
 
 } Crypto_JobPrimitiveInfoType;
+
 typedef struct {
 	uint8 redirectionConfig;
 	uint32 inputKeyId;
@@ -187,10 +191,9 @@ typedef struct {
 	uint32 outputKeyElementId;
 	uint32 secondaryOutputKeyId;
 	uint32 secondaryOutputKeyElementId;
-
 } Crypto_JobRedirectionInfoType;
 
-typedef struct {
+typedef struct{
 	uint32 jobId;
 	Crypto_JobStateType jobState;
 	Crypto_JobPrimitiveInputOutputType jobPrimitiveInputOutput;

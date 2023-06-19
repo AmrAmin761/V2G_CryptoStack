@@ -25,6 +25,8 @@
 /* ECUC_Crypto_00007 : Pre-compile option for Version Info API */
 #define CRYPTO_VERSION_INFO_API                (STD_ON)
 
+/*ECUC_Crypto_00040 : Pre-compile option to specify instance id*/
+#define CRYPTO_INSTANCE_ID                      (1U)
 
 /* ECUC_Crypto_00038 : Specifies the period of main function Crypto_MainFunction in seconds */
 #define CRYPTO_MAIN_FUNCTION_PERIOD				(0.05) //assumption
@@ -44,8 +46,9 @@
 /* ECUC_Crypto_00019 : Pre-compile configuration for Crypto Queue Size (MAx Number of jobs in the queue) */
 #define CRYPTO_QUEUE_SIZE 						 (128)//Implementation specific
 
-
-
+/* ECUC_Crypto_00045 : Reference to key used by crypto default*/
+#define CRYPTO_DEFAULT_RANDOM_KEY_REF       
+    
 /************  ECUC_Crypto_00011 : CryptoKey Container  ********/
 
 /* Configuration for Crypto ket signature generation Id */

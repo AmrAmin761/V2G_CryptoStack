@@ -248,12 +248,11 @@ Std_ReturnType Crypto_ProcessECDSA (CryptoSavedJobInfoType job);
 void Crypto_MainFunction (void);
 Std_ReturnType Crypto_CancelJob (uint32 objectId,Crypto_JobType* job);
 
-Std_ReturnType Crypto_KeyElementSet (
-uint32 cryptoKeyId,
-uint32 keyElementId,
-const uint8* keyPtr,
-uint32 keyLength
-);
+Std_ReturnType Crypto_KeyExchangeCalcSecret (uint32 cryptoKeyId, uint8* partnerPublicValuePtr, uint32* partnerPublicValueLength);
+Std_ReturnType Crypto_KeyExchangeCalcPubVal (uint32 cryptoKeyId, uint8* publicValuePtr, uint32* publicValueLengthPtr);
+
+
+Std_ReturnType Crypto_KeyElementSet (uint32 cryptoKeyId, uint32 keyElementId, const uint8* keyPtr, uint32 keyLength);
 
 /*******************************************************************************
  *                      external Variables                                    *

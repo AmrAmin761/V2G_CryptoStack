@@ -301,10 +301,26 @@ Std_ReturnType Crypto_ProcessJob (uint32 objectId,Crypto_JobType* job)
         }
         else
         {
+			/*
             // if not call Crypto_ProcessECDSA();->change states into this fn
             CryptoSavedJobInfoType jobInfo= {job, job->jobInfo.jobPriority};
              return Crypto_ProcessECDSA(jobInfo);
+			*/
+			switch (job->jobPrimitiveInfo->primitiveInfo->service)
+			{
+			case CRYPTO_KEYEXCHANGECALCPUBVAL :
+				Crypto_KeyExchangeCalcPubVal(job->cryptoKeyId ,job->jobPrimitiveInputOutput.inputPtr, &(job->jobPrimitiveInputOutput.inputLength) );
+			break;
+			
+			case CRYPTO_KEYEXCHANGECALCSECRET :
+				Crypto_KeyExchangeCalcSecret(job->cryptoKeyId ,job->jobPrimitiveInputOutput.inputPtr, &(job->jobPrimitiveInputOutput.inputLength) );
+			break;
+			
 
+			default:
+				return V2X_E_NOT_OK;
+				break;
+			}
         }
     }
 
