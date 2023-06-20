@@ -41,16 +41,25 @@
 #define CSM_JOB_ID2		(1U)
 #define CSM_JOB_ID3		(2U)
 #define CSM_JOB_ID4		(3U)
+#define CSM_JOB_ID5		(4U)
+#define CSM_JOB_ID6		(5U)
+#define CSM_JOB_ID7		(6U)
+
 
 #define USE_FNC 		(0U)
+
+#define JOB_PRIORITY_SIGNATURE_VERIFY (1U)
+#define JOB_PRIORITY_SIGNATURE_GENERATE (1U)
 
 #define JOB_PRIORITY_KEY_EXCHANGE (1U) //ECDH job for key exchange
 #define JOB_PRIORITY_ENCRYPT (2U) //3-DES job for data encryption
 #define JOB_PRIORITY_DECRYPT (2U) //3-DES job for data decryption
 #define JOB_PRIORITY_HASH    (1U)
 
-#define MAX_QUEUE_SIZE 4
-
+#define MAX_QUEUE_SIZE 7
+#define KEY_LENGTH_USED 64
+#define KEY_LENGTH_USED_ECDH 24
+#define KEY_LENGTH_USED_DES 192
 //#define KEY_LENGTH_USED 64
 
 /* CsmCallback */

@@ -27,7 +27,12 @@ uint32 QueueLoopCounter = 0;
 
 Crypto_QueueType queue;
 
-
+Crypto_JobType Crypto_JobType_SignatureGenerate =
+{.jobId=CSM_JOB_ID1,
+		.jobState=CRYPTO_JOBSTATE_IDLE,
+		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_SIGNATURE_GENERATE},
+		.jobPriority= JOB_PRIORITY_SIGNATURE_GENERATE,
+		.jobPrimitiveInfo=&signature_info};
 
 Crypto_JobType Crypto_JobType_SignatureVerify =
 {.jobId=CSM_JOB_ID2,
@@ -36,33 +41,35 @@ Crypto_JobType Crypto_JobType_SignatureVerify =
 		.jobPriority= JOB_PRIORITY_SIGNATURE_VERIFY,
 		.jobPrimitiveInfo=&verify_info};
 Crypto_JobType Crypto_JobType_KeyExchange =
-{.jobId=CSM_JOB_ID1,
+{.jobId=CSM_JOB_ID3,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_KEY_EXCHANGE},
 		.jobPriority= JOB_PRIORITY_KEY_EXCHANGE,
 		.jobPrimitiveInfo=&ecdh_info};
 Crypto_JobType Crypto_JobType_Encrypt =
-{.jobId=CSM_JOB_ID2,
+{.jobId=CSM_JOB_ID5,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID2,JOB_PRIORITY_ENCRYPT},
 		.jobPriority= JOB_PRIORITY_ENCRYPT,
 		.jobPrimitiveInfo=&Encrypt_info
 		};
 Crypto_JobType Crypto_JobType_Decrypt =
-{.jobId=CSM_JOB_ID3,
+{.jobId=CSM_JOB_ID6,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID3,JOB_PRIORITY_DECRYPT},
 		.jobPriority= JOB_PRIORITY_DECRYPT,
 		.jobPrimitiveInfo=&Decrypt_info};
 Crypto_JobType Crypto_JobType_Hash =
-{.jobId=CSM_JOB_ID4,
+{.jobId=CSM_JOB_ID7,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
 		.jobInfo={CSM_JOB_ID4,JOB_PRIORITY_HASH},
 		.jobPriority= JOB_PRIORITY_HASH,
 		.jobPrimitiveInfo=&hash_info};
 
 Crypto_JobType *Crypto_Jobs[MAX_QUEUE_SIZE] = {
-			
+
+		&Crypto_JobType_SignatureGenerate,
+		&Crypto_JobType_SignatureVerify,
 		&Crypto_JobType_Encrypt,
 		&Crypto_JobType_Decrypt,
 		&Crypto_JobType_Hash };
