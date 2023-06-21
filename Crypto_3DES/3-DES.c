@@ -627,7 +627,7 @@ void encrypt(long int n)
   
 }
 
-void tripleDesEncrypt(uint8 * message, uint8 * result,uint32 messageLength)
+void tripleDesEncrypt(uint8 * message, uint8 * outputPtr,uint32 messageLength , uint32 * outputLength)
 {
     
     convertCharToBit(message ,messageLength);
@@ -639,23 +639,36 @@ void tripleDesEncrypt(uint8 * message, uint8 * result,uint32 messageLength)
     encrypt(messageLength);    // convert 1.txt to 2.txt using `K1`
  
     key64to48(key + 64);
-    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K2`
+    decrypt(outputPtr,messageLength);    // convert 2.txt to 1.txt using `K2`
  
     key64to48(key + 128);
     encrypt(messageLength);    // convert 1.txt to 2.txt using `K3`
- 
+
+    memset(outputPtr, 0, sizeof(outputPtr));
+    *outputLength = temp2Index+1;
+    for(uint32 i = 0; i <= temp2Index ; i++)
+    {
+        *(outputPtr + i) = temp2[i];
+    }
+    printf("%s\n", temp2);
+    // Decryption starts (reverse of Encryption)
+    // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
+}
+
+void tripleDesDecrypt(uint8 * message, uint8 * outputPtr, uint32 messageLength, uint32 * outputLength)
+{
     // Decryption starts (reverse of Encryption)
     // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
  
     key64to48(key + 128);
-    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K3`
+    decrypt(outputPtr,messageLength);    // convert 2.txt to 1.txt using `K3`
  
     key64to48(key + 64);
     encrypt(messageLength);    // convert 1.txt to 2.txt using `K2`
  
     key64to48(key);
-    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K1`
- 
+    decrypt(outputPtr,messageLength);    // convert 2.txt to 1.txt using `K1`
+
 }
 
 int main()
@@ -666,7 +679,7 @@ int main()
  */
 
     char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Ga"};
-    char result[512];
+    char decryptResult[512];
     //long int messageLength = findFileSize() / 8;
    
     int messageLength = 0;
@@ -675,7 +688,14 @@ int main()
         messageLength++;
     }
     messageLength = (messageLength/8);
-    tripleDesEncrypt(message, result, messageLength);
-    printf("%s\n", result);
+    uint32 length = 0;
+    char encryptResult[4096];
+    tripleDesEncrypt(message, encryptResult, messageLength, &length);
+    printf("%s\n\n\n", encryptResult);
+    tripleDesDecrypt(encryptResult, decryptResult, messageLength, &length);
+    
+    printf("%d\n",length);
+    printf("%s\n\n\n", decryptResult);
+    //printf("%d\n",&length);
     return 0;
 }
