@@ -2,7 +2,7 @@
 
 
 #include "../inc/Crypto.h"
-#include "../../DET/inc/Det.h"
+//#include "../../DET/inc/Det.h"
 #include "../../Crypto_ecdsa/sha256.h"
 #include <stdio.h>
 #include "../../CryIf/inc/CryIf.h"
@@ -10,7 +10,7 @@
 #include "../../Crypto_ecdsa/Crypto_ECDSA_Signature_Verify.h"
 #include "../.."
 #include "../../Crypto_ECDH/inc/Crypto_ECDH.h"
-#include "../../SPI/inc/PLL.h"
+//#include "../../SPI/inc/PLL.h"
 
 #include "time.h"
 
@@ -308,12 +308,12 @@ Std_ReturnType Crypto_ProcessJob (uint32 objectId,Crypto_JobType* job)
 			*/
 			switch (job->jobPrimitiveInfo->primitiveInfo->service)
 			{
-			case CRYPTO_KEYEXCHANGECALCPUBVAL :
-				Crypto_KeyExchangeCalcPubVal(job->cryptoKeyId ,job->jobPrimitiveInputOutput.inputPtr, &(job->jobPrimitiveInputOutput.inputLength) );
+			case CRYPTO_ENCRYPT :
+				Crypto_ProcessEncrypt(job);
 			break;
 			
-			case CRYPTO_KEYEXCHANGECALCSECRET :
-				Crypto_KeyExchangeCalcSecret(job->cryptoKeyId ,job->jobPrimitiveInputOutput.inputPtr, &(job->jobPrimitiveInputOutput.inputLength) );
+			case CRYPTO_DECRYPT :
+				
 			break;
 			
 
@@ -336,6 +336,29 @@ Std_ReturnType Crypto_ProcessJob (uint32 objectId,Crypto_JobType* job)
         return V2X_E_NOT_OK;
 
 }
+
+
+Std_ReturnType Crypto_ProcessEncrypt(CryptoSavedJobInfoType jobInfo)
+{
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.inputPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.outputPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.outputLengthPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+
+	Crypto_State = CRYPTO_ACTIVE_STATE;
+	current_Job_State = CRYPTO_OPERATIONMODE_START;
+	
+
+}
+
 
 Std_ReturnType Crypto_ProcessECDSA (CryptoSavedJobInfoType jobInfo)
 {
@@ -779,11 +802,7 @@ uint32* publicValueLengthPtr
 			  	is stored as a key element in the same key.
 * Requirements:
 ************************************************************************************/
-Std_ReturnType Crypto_KeyExchangeCalcSecret (
-uint32 cryptoKeyId,
-uint8* partnerPublicValuePtr,
-uint32* partnerPublicValueLength
-)
+Std_ReturnType Crypto_KeyExchangeCalcSecret(uint32 cryptoKeyId, uint8 * partnerPublicValuePtr, uint32 * partnerPublicValueLength)
 {
 #if (CRYPTO_DEV_ERROR_DETECT == STD_ON)
 	/* Check if the Module is initialized before using this function */
@@ -811,6 +830,7 @@ uint32* partnerPublicValueLength
 	}
 #endif
 	{
+		//assert(ecdh_shared_secret(prva, partnerpublicvalueptr, seca)
 		assert(ecdh_shared_secret(prva, pubb, seca));
 		return CRYPTO_V2X_E_OK;
 	}

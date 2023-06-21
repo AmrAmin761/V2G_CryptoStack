@@ -125,8 +125,8 @@ CryptoPrimitiveService serviceUsed;
 of the workspace. Since this option is vulnerable to security, it shall only
 set to TRUE if absolutely needed */
 boolean CryptoPrimitiveSupportContext;
-
 }CryptoPrimitive;
+
 /* Selects the operation mode when an NV block shall be updated */
 typedef  enum {CRYPTO_NV_BLOCK_DEFERRED=1, CRYPTO_NV_BLOCK_IMMEDIATE}CryptoNvBlockProcessing;
 
@@ -176,7 +176,6 @@ typedef enum
 	CRYPTO_KE_FORMAT_BIN_IDENT_PUBLICKEY,
 	CRYPTO_KE_FORMAT_BIN_RSA_PRIVATEKEY,
 	CRYPTO_KE_FORMAT_BIN_RSA_PUBLICKEY,
-
 }CryptoKeyElementFormat;
 
 /* Define the reading access rights of the key element through external API */
@@ -204,7 +203,6 @@ typedef struct
 	boolean CryptoKeyElementWriteAccess;
 	uint32  CryptoKeyElementSize;
 
-
 }CryptoKeyElementType;
 
 
@@ -222,11 +220,16 @@ typedef struct
 typedef struct
 {
 	uint8 CryptoKeyId;
-	CryptoKeyTypeType* CryptoKeyTypeRef;
+	CryptoKeyTypeType * CryptoKeyTypeRef;
 	NvM_BlockDescriptorType *CryptoNvBlockDescriptorRef;
 
 }CryptoKeyType;
 
+typedef struct 
+{
+	CryptoKeyType * CryptoKeys[CRYPTO_KEYS_NUMBER];
+
+}CryptoKeysType;
 
 
 typedef struct
