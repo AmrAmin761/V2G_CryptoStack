@@ -626,12 +626,38 @@ void encrypt(long int n)
  
   
 }
-/*
-void tripleDesEncrypt(uint8 * key, uint8 * message, uint8 * result);
-{
 
+void tripleDesEncrypt(uint8 * message, uint8 * result,uint32 messageLength)
+{
+    
+    convertCharToBit(message ,messageLength);
+ 
+    // Encryption starts
+    // DES encrypt with `K1`, DES decrypt with `K2`, then DES encrypt with `K3`.
+ 
+    key64to48(key);
+    encrypt(messageLength);    // convert 1.txt to 2.txt using `K1`
+ 
+    key64to48(key + 64);
+    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K2`
+ 
+    key64to48(key + 128);
+    encrypt(messageLength);    // convert 1.txt to 2.txt using `K3`
+ 
+    // Decryption starts (reverse of Encryption)
+    // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
+ 
+    key64to48(key + 128);
+    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K3`
+ 
+    key64to48(key + 64);
+    encrypt(messageLength);    // convert 1.txt to 2.txt using `K2`
+ 
+    key64to48(key);
+    decrypt(result,messageLength);    // convert 2.txt to 1.txt using `K1`
+ 
 }
-*/
+
 int main()
 {
     /*
@@ -641,39 +667,15 @@ int main()
 
     char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Ga"};
     char result[512];
-    //long int n = findFileSize() / 8;
-    int n = 1;
+    //long int messageLength = findFileSize() / 8;
+   
+    int messageLength = 0;
     for(int i = 0; message[i] != '\0';i++)
     {
-        n++;
+        messageLength++;
     }
-    n = (n/8);
-    convertCharToBit(message ,n);
- 
-    // Encryption starts
-    // DES encrypt with `K1`, DES decrypt with `K2`, then DES encrypt with `K3`.
- 
-    key64to48(key);
-    encrypt(n);    // convert 1.txt to 2.txt using `K1`
- 
-    key64to48(key + 64);
-    decrypt(result,n);    // convert 2.txt to 1.txt using `K2`
- 
-    key64to48(key + 128);
-    encrypt(n);    // convert 1.txt to 2.txt using `K3`
- 
-    // Decryption starts (reverse of Encryption)
-    // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
- 
-    key64to48(key + 128);
-    decrypt(result,n);    // convert 2.txt to 1.txt using `K3`
- 
-    key64to48(key + 64);
-    encrypt(n);    // convert 1.txt to 2.txt using `K2`
- 
-    key64to48(key);
-    decrypt(result,n);    // convert 2.txt to 1.txt using `K1`
- 
+    messageLength = (messageLength/8);
+    tripleDesEncrypt(message, result, messageLength);
     printf("%s\n", result);
     return 0;
 }

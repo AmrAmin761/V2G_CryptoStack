@@ -338,8 +338,24 @@ Std_ReturnType Crypto_ProcessJob (uint32 objectId,Crypto_JobType* job)
 }
 
 
-Std_ReturnType Crypto_ProcessEncrypt(Crypto_JobType* job)
+Std_ReturnType Crypto_ProcessEncrypt(CryptoSavedJobInfoType jobInfo)
 {
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.inputPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.outputPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+	if(jobInfo.jobPtr->jobPrimitiveInputOutput.outputLengthPtr == NULL_PTR)
+	{
+		return V2X_E_NOT_OK;
+	}
+
+	Crypto_State = CRYPTO_ACTIVE_STATE;
+	current_Job_State = CRYPTO_OPERATIONMODE_START;
+	
 
 }
 
