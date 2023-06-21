@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
- 
+#include "Std_Types.h"
 int IP[] =
 {
     58, 50, 42, 34, 26, 18, 10, 2,
@@ -165,7 +165,7 @@ unsigned int key[192] = {0x00,0x00,0x00,0x01,0x00,0x00,0x01,0x01,0x00,0x00,0x01,
 
 
 //Message buffer length must be divisible by 8
-char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Gamed"};
+//char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Gamed"};
 //char message[] = {"Breks El Beks Loves Borgir"};
 
 char temp1[4096];
@@ -174,7 +174,7 @@ long temp1Index = 0;
 char temp2[4096];
 long temp2Index = 0;
 
-char result[512] = {0};
+
 long resultIndex = 0;
 
 void expansion_function(int pos, int text)
@@ -334,8 +334,7 @@ void convertToBinary(int n)
         temp1Index++;
     }
 }
- 
-int convertCharToBit(long int n)
+int convertCharToBit(uint8 * message,long int n)
 {
    // FILE *inp = fopen("input.txt", "rb");
    // out = fopen("1.txt", "wb+");
@@ -358,7 +357,7 @@ int convertCharToBit(long int n)
  //   fclose(inp);
 }
  
-void convertToBits(int ch[])
+void convertToBits(uint8 * result,int ch[])
 {
     int value = 0;
     for (int i = 7; i >= 0; i--) {
@@ -368,11 +367,11 @@ void convertToBits(int ch[])
     result[resultIndex++] = value;
 }
  
-int bittochar()
+int bittochar(uint8 * result)
 {
     //out = fopen("result.txt", "ab+");
     for (int i = 0; i < 64; i = i + 8) {
-        convertToBits(&ENCRYPTED[i]);
+        convertToBits(result,&ENCRYPTED[i]);
     }
     //fclose(out);
 }
@@ -561,7 +560,7 @@ void Decryption(long int plain[])
   //  fclose(out);
 }
  
-void decrypt(long int n)
+void decrypt(uint8 * result,long int n)
 {
     // destroy contents of these files (from previous runs)
     //FILE *out = fopen("1.txt", "wb+");
@@ -594,7 +593,7 @@ void decrypt(long int n)
     for (int i = 0; i < n; i++)
     {
         Decryption(plain + i * 64);
-        bittochar();
+        bittochar(result);
     }
  
    // fclose(in);
@@ -627,7 +626,12 @@ void encrypt(long int n)
  
   
 }
+/*
+void tripleDesEncrypt(uint8 * key, uint8 * message, uint8 * result);
+{
 
+}
+*/
 int main()
 {
     /*
@@ -635,7 +639,8 @@ int main()
     create16Keys(key);
  */
 
-
+    char message[] = {"Breks el Beks loves Borgir The pangram \"The quick brown fox jumps over the lazy dog\", and the search for a shorter pangram, are the cornerstone of the plot of the novel Ella Minnow Pea by Mark Dunn. The search successfully comes to an end when the phrase \"Pack my box with five dozen liquor jugs\" is discovery Ga"};
+    char result[512];
     //long int n = findFileSize() / 8;
     int n = 1;
     for(int i = 0; message[i] != '\0';i++)
@@ -643,7 +648,7 @@ int main()
         n++;
     }
     n = (n/8);
-    convertCharToBit(n);
+    convertCharToBit(message ,n);
  
     // Encryption starts
     // DES encrypt with `K1`, DES decrypt with `K2`, then DES encrypt with `K3`.
@@ -652,7 +657,7 @@ int main()
     encrypt(n);    // convert 1.txt to 2.txt using `K1`
  
     key64to48(key + 64);
-    decrypt(n);    // convert 2.txt to 1.txt using `K2`
+    decrypt(result,n);    // convert 2.txt to 1.txt using `K2`
  
     key64to48(key + 128);
     encrypt(n);    // convert 1.txt to 2.txt using `K3`
@@ -661,13 +666,13 @@ int main()
     // decrypt with `K3`, encrypt with `K2`, then decrypt with `K1`.
  
     key64to48(key + 128);
-    decrypt(n);    // convert 2.txt to 1.txt using `K3`
+    decrypt(result,n);    // convert 2.txt to 1.txt using `K3`
  
     key64to48(key + 64);
     encrypt(n);    // convert 1.txt to 2.txt using `K2`
  
     key64to48(key);
-    decrypt(n);    // convert 2.txt to 1.txt using `K1`
+    decrypt(result,n);    // convert 2.txt to 1.txt using `K1`
  
     printf("%s\n", result);
     return 0;

@@ -63,7 +63,9 @@
 #define  CRYPTO_KEY_ELEMENT_INDEX_SIZE 								(1)
 
 /* Number of key elements in the Key */
-#define CRYPTO_KEY_ELEMENTS_NUMBER        2
+#define CRYPTO_KEY_ELEMENTS_NUMBER                                   2
+
+#define CRYPTO_KEYS_NUMBER                                           2
 
 /**********  ECUC_Crypto_00005 : Crypto Key Element container  **********/
 
