@@ -40,29 +40,41 @@ Crypto_JobType Crypto_JobType_SignatureVerify =
 		.jobInfo={CSM_JOB_ID2,JOB_PRIORITY_SIGNATURE_VERIFY},
 		.jobPriority= JOB_PRIORITY_SIGNATURE_VERIFY,
 		.jobPrimitiveInfo=&verify_info};
-Crypto_JobType Crypto_JobType_KeyExchange =
+
+Crypto_JobType Crypto_JobType_KeyExchangeCalcPubVal =
 {.jobId=CSM_JOB_ID3,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID1,JOB_PRIORITY_KEY_EXCHANGE},
+		.jobInfo={CSM_JOB_ID3,JOB_PRIORITY_KEY_EXCHANGE},
 		.jobPriority= JOB_PRIORITY_KEY_EXCHANGE,
-		.jobPrimitiveInfo=&ecdh_info};
+		.jobPrimitiveInfo=&KeyExchangePubVal_info};
+
+Crypto_JobType Crypto_JobType_KeyExchangeCalcSecVal =
+{.jobId=CSM_JOB_ID4,
+		.jobState=CRYPTO_JOBSTATE_IDLE,
+		.jobInfo={CSM_JOB_ID4,JOB_PRIORITY_KEY_EXCHANGE},
+		.jobPriority= JOB_PRIORITY_KEY_EXCHANGE,
+		.jobPrimitiveInfo=&KeyExchangeSecVal_info};
+
+
 Crypto_JobType Crypto_JobType_Encrypt =
 {.jobId=CSM_JOB_ID5,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID2,JOB_PRIORITY_ENCRYPT},
+		.jobInfo={CSM_JOB_ID5,JOB_PRIORITY_ENCRYPT},
 		.jobPriority= JOB_PRIORITY_ENCRYPT,
 		.jobPrimitiveInfo=&Encrypt_info
 		};
+
 Crypto_JobType Crypto_JobType_Decrypt =
 {.jobId=CSM_JOB_ID6,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID3,JOB_PRIORITY_DECRYPT},
+		.jobInfo={CSM_JOB_ID6,JOB_PRIORITY_DECRYPT},
 		.jobPriority= JOB_PRIORITY_DECRYPT,
 		.jobPrimitiveInfo=&Decrypt_info};
+
 Crypto_JobType Crypto_JobType_Hash =
 {.jobId=CSM_JOB_ID7,
 		.jobState=CRYPTO_JOBSTATE_IDLE,
-		.jobInfo={CSM_JOB_ID4,JOB_PRIORITY_HASH},
+		.jobInfo={CSM_JOB_ID7,JOB_PRIORITY_HASH},
 		.jobPriority= JOB_PRIORITY_HASH,
 		.jobPrimitiveInfo=&hash_info};
 
@@ -70,6 +82,8 @@ Crypto_JobType *Crypto_Jobs[MAX_QUEUE_SIZE] = {
 
 		&Crypto_JobType_SignatureGenerate,
 		&Crypto_JobType_SignatureVerify,
+		&Crypto_JobType_KeyExchangeCalcPubVal,
+		&Crypto_JobType_KeyExchangeCalcSecVal,
 		&Crypto_JobType_Encrypt,
 		&Crypto_JobType_Decrypt,
 		&Crypto_JobType_Hash };

@@ -38,9 +38,8 @@
 		,&V2xM_VerifyCallbackNotification,
 		&V2xM_HashCallbackNotification };*/
 
-const CsmSignatureGenerateConfig CsmJobPrimitiveRef1=
-{ CRYPTO_ALGOFAM_ECCSEC, CRYPTO_ALGOMODE_NOT_SET, CRYPTO_ALGOFAM_NOT_SET, KEY_LENGTH_USED };
-const CsmSignatureVerifyConfig CsmJobPrimitiveRef2={ CRYPTO_ALGOFAM_ECCSEC, CRYPTO_ALGOMODE_NOT_SET, CRYPTO_ALGOFAM_NOT_SET, KEY_LENGTH_USED };
+const CsmSignatureGenerateConfig CsmJobPrimitiveRef1= { CRYPTO_ALGOFAM_ECCSEC, CRYPTO_ALGOMODE_NOT_SET, CRYPTO_ALGOFAM_NOT_SET, KEY_LENGTH_USED };
+const CsmSignatureVerifyConfig CsmJobPrimitiveRef2= { CRYPTO_ALGOFAM_ECCSEC, CRYPTO_ALGOMODE_NOT_SET, CRYPTO_ALGOFAM_NOT_SET, KEY_LENGTH_USED };
 const CsmHashConfig CsmJobPrimitiveRef3= {CRYPTO_ALGOFAM_SHA2_256 , 0, 0, KEY_LENGTH_USED } ;
 const CsmPrimitives primitive1=
 {CsmJobPrimitiveRef1,CsmJobPrimitiveRef2,CsmJobPrimitiveRef3};
@@ -90,10 +89,14 @@ const Crypto_AlgorithmInfoType ecdh_algo_info =
 		CRYPTO_ALGOFAM_NOT_SET,
 		KEY_LENGTH_USED_ECDH,//key-length = 24
 		CRYPTO_ALGOMODE_NOT_SET};
-const Crypto_PrimitiveInfoType ecdh_primitiveInfo ={32,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
+const Crypto_PrimitiveInfoType KeyExchangePubVal_primitiveInfo ={32/*Result Length*/,CRYPTO_KEYEXCHANGECALCPUBVAL,ecdh_algo_info};
+const Crypto_PrimitiveInfoType KeyExchangeSecVal_primitiveInfo = {32/*Result Length*/,CRYPTO_KEYEXCHANGECALCSECRET,ecdh_algo_info};
+//CryIf key ids need to be checked
+const Crypto_JobPrimitiveInfoType KeyExchangePubVal_info=
+{2,&KeyExchangePubVal_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_SYNC,FALSE};
+const Crypto_JobPrimitiveInfoType  KeyExchangeSecVal_info=
+{2,&KeyExchangeSecVal_primitiveInfo,CRYIF_KEY_ID4,CRYPTO_PROCESSING_SYNC,FALSE};
 
-const Crypto_JobPrimitiveInfoType ecdh_info=
-{2,&ecdh_primitiveInfo,CRYIF_KEY_ID3,CRYPTO_PROCESSING_ASYNC,FALSE};
 
 /* Encrypt Structs*/
 const Crypto_AlgorithmInfoType des_algo_info =
